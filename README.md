@@ -1,4 +1,4 @@
-# # FSM-F03-DAT
+# FSM-F03-DAT
 
 ## 1. Project Overview
 
@@ -13,8 +13,10 @@ FSM-F03-DAT/
 ├── README.md
 ├── requirement/
 │   └── README.md
+│   └── requirements_F03.md
 └── specification/
     └── README.md
+    └── specification_F03.md
 ```
 
 ### `requirement/`
