@@ -1,0 +1,72 @@
+Reading timing models for corner nom_tt_025C_1v80…
+Reading timing library for the 'nom_tt_025C_1v80' corner at '/home/lucero/.ciel/ciel/sky130/versions/8afc8346a57fe1ab7934ba5a6056ea8b43078e71/sky130A/libs.ref/sky130_fd_sc_hd/lib/sky130_fd_sc_hd__tt_025C_1v80.lib'…
+Reading OpenROAD database at '/home/lucero/projects/RTL2GDS_UNIFIED_80_v2.0/F03_FSM_khoa_so_bon_chu_so_co_khoa_tam/04_IMPLEMENTATION/scripts/runs/RUN_2026-09-25_17-41-22/37-openroad-resizertimingpostcts/f03_lock_scaffold_explicit.odb'…
+Reading design constraints file at '/home/lucero/projects/RTL2GDS_UNIFIED_80_v2.0/F03_FSM_khoa_so_bon_chu_so_co_khoa_tam/04_IMPLEMENTATION/constraints/design.sdc'…
+[INFO] No information on clock propagation in input SDC file-- propagating all clocks.
+[INFO] Setting signal min routing layer to: met1 and clock min routing layer to met1. 
+[INFO] Setting signal max routing layer to: met5 and clock max routing layer to met5. 
++ global_route -congestion_iterations 50 -verbose
+[INFO GRT-0020] Min routing layer: met1
+[INFO GRT-0021] Max routing layer: met5
+[INFO GRT-0022] Global adjustment: 30%
+[INFO GRT-0023] Grid origin: (0, 0)
+[INFO GRT-0088] Layer li1     Track-Pitch = 0.4600  line-2-Via Pitch: 0.3400
+[INFO GRT-0088] Layer met1    Track-Pitch = 0.3400  line-2-Via Pitch: 0.3400
+[INFO GRT-0088] Layer met2    Track-Pitch = 0.4600  line-2-Via Pitch: 0.3500
+[INFO GRT-0088] Layer met3    Track-Pitch = 0.6800  line-2-Via Pitch: 0.6150
+[INFO GRT-0088] Layer met4    Track-Pitch = 0.9200  line-2-Via Pitch: 1.0400
+[INFO GRT-0088] Layer met5    Track-Pitch = 3.4000  line-2-Via Pitch: 3.1100
+[INFO GRT-0003] Macros: 0
+[INFO GRT-0004] Blockages: 369
+[INFO GRT-0019] Found 4 clock nets.
+[INFO GRT-0001] Minimum degree: 2
+[INFO GRT-0002] Maximum degree: 19
+
+[INFO GRT-0053] Routing resources analysis:
+          Routing      Original      Derated      Resource
+Layer     Direction    Resources     Resources    Reduction (%)
+---------------------------------------------------------------
+li1        Vertical            0             0          0.00%
+met1       Horizontal       1363           915          32.87%
+met2       Vertical         1205           798          33.78%
+met3       Horizontal        868           597          31.22%
+met4       Vertical          607           363          40.20%
+met5       Horizontal        152            80          47.37%
+---------------------------------------------------------------
+
+[INFO GRT-0197] Via related to pin nodes: 680
+[INFO GRT-0198] Via related Steiner nodes: 8
+[INFO GRT-0199] Via filling finished.
+[INFO GRT-0111] Final number of vias: 831
+[INFO GRT-0112] Final usage 3D: 2825
+
+[INFO GRT-0096] Final congestion report:
+Layer         Resource        Demand        Usage (%)    Max H / Max V / Total Overflow
+---------------------------------------------------------------------------------------
+li1                  0             0            0.00%             0 /  0 /  0
+met1               915           158           17.27%             0 /  0 /  0
+met2               798           164           20.55%             0 /  0 /  0
+met3               597            10            1.68%             0 /  0 /  0
+met4               363             0            0.00%             0 /  0 /  0
+met5                80             0            0.00%             0 /  0 /  0
+---------------------------------------------------------------------------------------
+Total             2753           332           12.06%             0 /  0 /  0
+
+[INFO GRT-0018] Total wirelength: 4091 um
+[INFO GRT-0014] Routed nets: 117
+[INFO GRT-0303] Global routing runtime = 00:00:00
+Setting global connections for newly added cells…
+[INFO] Setting global connections...
+[INFO ODB-0403] 0 connections made, 0 conflicts skipped.
+Updating metrics…
+Cell type report:                       Count       Area
+  Fill cell                                38     142.64
+  Tap cell                                 42      52.55
+  Clock buffer                              4      88.84
+  Timing Repair Buffer                      9      85.08
+  Inverter                                  4      15.01
+  Sequential cell                          26     553.03
+  Multi-Input combinational cell           68     599.32
+  Total                                   191    1536.47
+Writing OpenROAD database to '/home/lucero/projects/RTL2GDS_UNIFIED_80_v2.0/F03_FSM_khoa_so_bon_chu_so_co_khoa_tam/04_IMPLEMENTATION/scripts/runs/RUN_2026-09-25_17-41-22/39-openroad-globalrouting/f03_lock_scaffold_explicit.odb'…
+Writing layout to '/home/lucero/projects/RTL2GDS_UNIFIED_80_v2.0/F03_FSM_khoa_so_bon_chu_so_co_khoa_tam/04_IMPLEMENTATION/scripts/runs/RUN_2026-09-25_17-41-22/39-openroad-globalrouting/f03_lock_scaffold_explicit.def'…

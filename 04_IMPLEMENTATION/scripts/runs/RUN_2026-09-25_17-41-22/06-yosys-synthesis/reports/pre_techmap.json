@@ -1,0 +1,57 @@
+{
+   "creator": "Yosys 0.62 (git sha1 7326bb7d6641500ecb285c291a54a662cb1e76cf, clang++ 21.1.2 -fPIC -O3)",
+   "invocation": "stat -json -liberty /home/lucero/projects/RTL2GDS_UNIFIED_80_v2.0/F03_FSM_khoa_so_bon_chu_so_co_khoa_tam/04_IMPLEMENTATION/scripts/runs/RUN_2026-09-25_17-41-22/tmp/a34fb4534bc844f691635a6ba686cae2.lib ",
+   "modules": {
+      "\\f03_lock_scaffold_explicit": {
+         "num_wires":         91,
+         "num_wire_bits":     113,
+         "num_pub_wires":     13,
+         "num_pub_wire_bits": 35,
+         "num_ports":         6,
+         "num_port_bits":     9,
+         "num_memories":      0,
+         "num_memory_bits":   0,
+         "num_processes":     0,
+         "num_cells":         104,
+         "num_submodules":       0,
+         "num_cells_by_type": {
+            "$_ANDNOT_": 26,
+            "$_AND_": 5,
+            "$_DFF_P_": 8,
+            "$_MUX_": 1,
+            "$_NAND_": 4,
+            "$_NOT_": 1,
+            "$_ORNOT_": 8,
+            "$_OR_": 32,
+            "$_SDFFE_PN0P_": 18,
+            "$_XNOR_": 1
+         }
+      }
+   },
+      "design": {
+         "num_wires":         91,
+         "num_wire_bits":     113,
+         "num_pub_wires":     13,
+         "num_pub_wire_bits": 35,
+         "num_ports":         6,
+         "num_port_bits":     9,
+         "num_memories":      0,
+         "num_memory_bits":   0,
+         "num_processes":     0,
+         "num_cells":         104,
+         "num_submodules":       0,
+         "num_cells_by_type": {
+            "$_ANDNOT_": 26,
+            "$_AND_": 5,
+            "$_DFF_P_": 8,
+            "$_MUX_": 1,
+            "$_NAND_": 4,
+            "$_NOT_": 1,
+            "$_ORNOT_": 8,
+            "$_OR_": 32,
+            "$_SDFFE_PN0P_": 18,
+            "$_XNOR_": 1
+         }
+      }
+}
+

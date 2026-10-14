@@ -1,0 +1,35 @@
+101. Printing statistics.
+
+=== f03_lock_scaffold_explicit ===
+
+        +----------Local Count, excluding submodules.
+        | 
+       91 wires
+      113 wire bits
+       13 public wires
+       35 public wire bits
+        6 ports
+        9 port bits
+      104 cells
+       26   $_ANDNOT_
+        5   $_AND_
+        8   $_DFF_P_
+        1   $_MUX_
+        4   $_NAND_
+        1   $_NOT_
+        8   $_ORNOT_
+       32   $_OR_
+       18   $_SDFFE_PN0P_
+        1   $_XNOR_
+
+   Area for cell type $_ANDNOT_ is unknown!
+   Area for cell type $_AND_ is unknown!
+   Area for cell type $_DFF_P_ is unknown!
+   Area for cell type $_MUX_ is unknown!
+   Area for cell type $_NAND_ is unknown!
+   Area for cell type $_NOT_ is unknown!
+   Area for cell type $_ORNOT_ is unknown!
+   Area for cell type $_OR_ is unknown!
+   Area for cell type $_SDFFE_PN0P_ is unknown!
+   Area for cell type $_XNOR_ is unknown!
+

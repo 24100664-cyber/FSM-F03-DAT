@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>F03 — FSM khoá số bốn chữ số có khoá tạm · Ghi chú thực hiện</title>
+<style>
+:root{
+  --bg:#ffffff; --fg:#1a1d21; --muted:#5c6570; --line:#e3e7eb;
+  --accent:#1f5fa9; --accent-soft:#eef4fb; --code-bg:#f5f7f9;
+  --ok:#137a4d; --ok-bg:#e8f6ee; --warn:#8a5a00; --warn-bg:#fdf4e2;
+  --bad:#a52020; --bad-bg:#fceded; --open:#7a5ba8; --open-bg:#f3eefa;
+  --maxw:960px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#15181c; --fg:#e6e9ec; --muted:#98a2ad; --line:#2a2f36;
+    --accent:#6fa8e0; --accent-soft:#1c2733; --code-bg:#1b1f24;
+    --ok:#5cc08d; --ok-bg:#16291f; --warn:#d8a54a; --warn-bg:#2a2314;
+    --bad:#e88b8b; --bad-bg:#2b1a1a; --open:#b79ad6; --open-bg:#241d2e;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#15181c; --fg:#e6e9ec; --muted:#98a2ad; --line:#2a2f36;
+  --accent:#6fa8e0; --accent-soft:#1c2733; --code-bg:#1b1f24;
+  --ok:#5cc08d; --ok-bg:#16291f; --warn:#d8a54a; --warn-bg:#2a2314;
+  --bad:#e88b8b; --bad-bg:#2b1a1a; --open:#b79ad6; --open-bg:#241d2e;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0; background:var(--bg); color:var(--fg);
+  font:16px/1.7 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  -webkit-text-size-adjust:100%;
+}
+.wrap{max-width:var(--maxw); margin:0 auto; padding:0 16px 96px}
+header.doc{
+  border-bottom:1px solid var(--line); margin-bottom:28px; padding:36px 0 22px;
+}
+header.doc .eyebrow{
+  font-size:12px; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--muted); font-weight:600; margin-bottom:10px;
+}
+header.doc h1{font-size:clamp(24px,4.4vw,34px); line-height:1.25; margin:0 0 14px}
+.badges{display:flex; flex-wrap:wrap; gap:7px; margin-top:6px}
+.badge{
+  font-size:12.5px; padding:3px 10px; border-radius:999px;
+  border:1px solid var(--line); color:var(--muted); background:var(--accent-soft);
+  white-space:nowrap;
+}
+.badge.ok{color:var(--ok); background:var(--ok-bg); border-color:transparent}
+.badge.warn{color:var(--warn); background:var(--warn-bg); border-color:transparent}
+.badge.bad{color:var(--bad); background:var(--bad-bg); border-color:transparent}
+.badge.open{color:var(--open); background:var(--open-bg); border-color:transparent}
+nav.toc{
+  border:1px solid var(--line); border-radius:10px; padding:16px 20px;
+  margin:0 0 32px; background:var(--accent-soft);
+}
+nav.toc p{margin:0 0 8px; font-weight:700; font-size:13px; letter-spacing:.06em;
+  text-transform:uppercase; color:var(--muted)}
+nav.toc ul{margin:0; padding-left:20px}
+nav.toc li{margin:3px 0}
+nav.toc a{color:var(--fg); text-decoration:none}
+nav.toc a:hover{color:var(--accent); text-decoration:underline}
+nav.toc ul ul{padding-left:18px; font-size:14.5px}
+h2{font-size:22px; margin:40px 0 12px; padding-bottom:6px; border-bottom:1px solid var(--line)}
+h3{font-size:18px; margin:28px 0 8px}
+h4{font-size:16px; margin:22px 0 6px; color:var(--muted)}
+p{margin:12px 0}
+a{color:var(--accent)}
+ul,ol{padding-left:24px}
+li{margin:4px 0}
+code{
+  font-family:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace;
+  font-size:.9em; background:var(--code-bg); padding:1.5px 5px; border-radius:4px;
+}
+pre{
+  background:var(--code-bg); border:1px solid var(--line); border-radius:8px;
+  padding:14px 16px; overflow-x:auto; line-height:1.55; font-size:13.5px;
+}
+pre code{background:none; padding:0; font-size:inherit}
+blockquote{
+  margin:16px 0; padding:2px 18px; border-left:3px solid var(--accent);
+  background:var(--accent-soft); border-radius:0 8px 8px 0; color:var(--fg);
+}
+blockquote p{margin:10px 0}
+.tablewrap{overflow-x:auto; margin:16px 0; -webkit-overflow-scrolling:touch}
+table{border-collapse:collapse; width:100%; font-size:14.5px; min-width:420px}
+th,td{border:1px solid var(--line); padding:7px 11px; text-align:left; vertical-align:top}
+th{background:var(--accent-soft); font-weight:650; white-space:nowrap}
+tbody tr:nth-child(even) td{background:color-mix(in srgb, var(--code-bg) 55%, transparent)}
+hr{border:0; border-top:1px solid var(--line); margin:34px 0}
+footer.doc{
+  margin-top:56px; padding-top:18px; border-top:1px solid var(--line);
+  color:var(--muted); font-size:13.5px;
+}
+.themebtn{
+  position:fixed; right:14px; bottom:14px; z-index:10;
+  border:1px solid var(--line); background:var(--bg); color:var(--muted);
+  border-radius:999px; padding:8px 14px; font-size:13px; cursor:pointer;
+}
+.themebtn:hover{color:var(--fg)}
+@media (max-width:640px){
+  .wrap{padding:0 16px 72px}
+  header.doc{padding:26px 0 18px}
+  nav.toc{padding:14px 16px}
+}
+@media print{
+  .themebtn{display:none}
+  nav.toc{break-inside:avoid}
+  pre,table,blockquote{break-inside:avoid}
+  body{font-size:11pt}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="doc">
+  <div class="eyebrow">RTL2GDS · Đề F03 · Ghi chú thực hiện</div>
+  <h1>F03 — FSM khoá số bốn chữ số có khoá tạm · Ghi chú thực hiện</h1>
+  <div class="badges"><span class="badge ">🔧 Đã vá và xác minh lại</span><span class="badge ">F · Máy trạng thái hữu hạn (FSM)</span><span class="badge ">Độ khó: Trung bình</span><span class="badge ">Loại mạch: Tuần tự</span><span class="badge ok">Mô phỏng: PASS</span><span class="badge ">Tổng hợp: 95 cell · 23 FF</span><span class="badge ">Đường tới hạn: 1,97 ns</span><span class="badge warn">Physical design: CHƯA CHẠY</span></div>
+</header>
+<nav class="toc"><p>Mục lục</p><ul><li><a href="#1-bai-toan-nay-thuc-chat-la-gi">1. Bài toán này thực chất là gì</a></li><li><a href="#2-ban-chat-ky-thuat-co-che-hoat-dong">2. Bản chất kỹ thuật — cơ chế hoạt động</a></li><li><a href="#3-doc-ma-nguon-rtl-lam-gi-tung-dong-quan-trong">3. Đọc mã nguồn: RTL làm gì, từng dòng quan trọng</a></li><li><a href="#4-vi-sao-chon-kien-truc-nay">4. Vì sao chọn kiến trúc này</a></li><li><a href="#5-cach-thuc-hien-lo-trinh-8-buoc-tu-dac-ta-toi-gdsii">5. Cách thực hiện — lộ trình 8 bước từ đặc tả tới GDSII</a></li><li><a href="#6-so-lieu-that-da-do-duoc-va-cach-doc-chung">6. Số liệu thật đã đo được và cách đọc chúng</a></li><li><a href="#7-tra-loi-cac-cau-hoi-ky-thuat-cua-charter-muc-2">7. Trả lời các câu hỏi kỹ thuật của Charter (mục 2)</a></li><li><a href="#8-tra-loi-cau-phan-tich-rieng-charter-muc-9">8. Trả lời câu phân tích riêng (Charter mục 9)</a></li><li><a href="#9-nhung-cho-sinh-vien-hay-sai-va-cach-phat-hien">9. Những chỗ sinh viên hay sai và cách phát hiện</a></li><li><a href="#10-cau-hoi-mentor-nen-dat-khi-bao-ve">10. Câu hỏi mentor nên đặt khi bảo vệ</a></li><li><a href="#11-gioi-han-da-chung-minh-duoc-gi-chua-chung-minh-duoc-gi">11. Giới hạn: đã chứng minh được gì, chưa chứng minh được gì</a></li></ul></nav>
+<main>
+<hr>
+<h2 id="1-bai-toan-nay-thuc-chat-la-gi">1. Bài toán này thực chất là gì</h2>
+<p>Nhìn qua, F03 là "so mật khẩu". Nhưng so mật khẩu là việc của một cổng AND — nó không cần
+FSM. Bản chất của F03 nằm ở ba chữ khác: <strong>bốn chữ số</strong>, <strong>nối tiếp</strong>, và <strong>khoá tạm</strong>.</p>
+<p>Giao diện chỉ có 4 bit dữ liệu (<code>digit[3:0]</code>) và một tín hiệu bắt tay (<code>digit_valid</code>). Mã
+bí mật thì dài 16 bit. Vậy khối buộc phải <strong>gom bốn sự kiện rời rạc theo thời gian thành
+một sự kiện logic duy nhất</strong>. Đây chính là định nghĩa của một máy trạng thái: một thiết bị
+biến <em>chuỗi theo thời gian</em> thành <em>quyết định</em>.</p>
+<p>Tầng thứ hai còn thú vị hơn. Charter mục 1 nói "khoá tạm sau ba lần sai để chống dò mã" —
+nghĩa là khối không chỉ nhớ <em>đang nhập tới đâu</em>, mà còn nhớ <em>lịch sử của các lần thử trước</em>.
+Và Charter mục 10 chỉ thẳng vào cái bẫy: phải là <strong>ba lần sai LIÊN TIẾP</strong>, không phải ba
+lần sai tổng cộng. Khác biệt một dòng lệnh trong RTL, khác biệt một trời một vực về ý nghĩa:
+"tổng cộng" nghĩa là một người dùng vụng về, dùng tủ mỗi ngày, sau vài tháng sẽ bị khoá
+vĩnh viễn dù chưa bao giờ sai hai lần liền.</p>
+<p>Vậy F03 thực chất là bài toán về <strong>ba mức trạng thái lồng nhau, trên ba thang thời gian
+khác nhau</strong>:</p>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Mức</th>
+<th>Thang thời gian</th>
+<th>Cái được nhớ</th>
+<th>Tín hiệu</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>trong một lần thử</td>
+<td>đang nhập chữ số thứ mấy</td>
+<td><code>pos[1:0]</code></td>
+</tr>
+<tr>
+<td>2</td>
+<td>giữa các lần thử</td>
+<td>đã sai liên tiếp bao nhiêu lần</td>
+<td><code>fails[1:0]</code></td>
+</tr>
+<tr>
+<td>3</td>
+<td>vĩnh viễn (tới reset)</td>
+<td>đã bị khoá chưa</td>
+<td><code>state == LOCKED_ST</code></td>
+</tr>
+</tbody>
+</table></div>
+<p>Ai thiết kế F03 mà chỉ nghĩ tới mức 1 sẽ ra một mạch đúng về so sánh nhưng vô dụng về bảo mật.</p>
+<h2 id="2-ban-chat-ky-thuat-co-che-hoat-dong">2. Bản chất kỹ thuật — cơ chế hoạt động</h2>
+<p>Ba cơ chế đáng nói, và cả ba đều có bằng chứng trong netlist.</p>
+<p><strong>Cơ chế 1 — con trỏ ghi biến chuỗi thời gian thành chuỗi không gian.</strong>
+<code>pos[1:0]</code> là bộ đếm mod-4. Nó không tham gia tính toán gì; việc duy nhất của nó là <strong>chọn
+thanh ghi nào được ghi</strong> ở chu kỳ này. Cơ chế vật lý: <code>pos</code> đi vào một bộ giải mã 2→4, ra
+bốn tín hiệu write-enable, mỗi tín hiệu lái chân <code>S</code> của một nhóm 4 <code>mux2i_1</code>. Mỗi mux chọn
+giữa "giữ giá trị cũ" (<code>A0 = d0[0]</code>) và "nạp giá trị mới" (<code>A1 = digit[0]</code>). Nhìn trong
+netlist:</p>
+<pre><code class="language-verilog">sky130_fd_sc_hd__mux2i_1 _084_ (.A0(\d0[0] ), .A1(digit[0]), .S(_049_), .Y(_050_));
+</code></pre>
+<p>Đây là lý do có <strong>16 cell <code>mux2i_1</code></strong> trong <code>synth_stat.txt</code> — đúng bằng số bit bộ đệm mã.
+Con số 16 không phải trùng hợp; nó là dấu vân tay của kiến trúc "bốn thanh ghi có write-enable".</p>
+<p><strong>Cơ chế 2 — nén 16 bit thành 1 bit trong đúng hai mức cổng.</strong>
+Bộ đệm rộng 16 bit, nhưng FSM chỉ có 3 bit trạng thái. Toàn bộ 16 bit phải được nén thành
+<strong>một bit duy nhất</strong> (<code>match</code>) trước khi được phép ảnh hưởng tới quyết định. Việc nén này
+rẻ tới bất ngờ vì mã bí mật là <strong>hằng số</strong>: so sánh <code>d0 == 4'b0001</code> không cần XNOR, nó chỉ
+là "ba bit này phải bằng 0 và một bit kia phải bằng 1" — tức là <strong>một cổng NOR 4 đầu vào có
+một chân đảo</strong>. Yosys tìm đúng cell đó trong sky130: <code>nor4b_1</code>.</p>
+<p>Hệ quả: comparator 16 bit chỉ tốn <strong>5 cổng, 2 mức</strong> (<code>_066_</code>…<code>_070_</code>). Đây là lý do
+đường tới hạn <strong>không</strong> đi qua comparator. Nếu mã bí mật nằm trong thanh ghi, comparator
+phải là 16 XNOR + cây AND ≥ 4 mức, và bức tranh timing sẽ khác hẳn.</p>
+<p><strong>Cơ chế 3 — trạng thái hấp thụ là cách rẻ nhất để làm "khoá vĩnh viễn".</strong>
+<code>LOCKED_ST: state&lt;=LOCKED_ST;</code> — một dòng. Về mặt phần cứng, nó tạo một vòng tự-giữ trên
+<code>state</code>, và vì <code>case(state)</code> không có nhánh nào rời <code>LOCKED_ST</code>, <strong>không tồn tại đường logic
+nào</strong> đưa <code>state</code> ra khỏi mã <code>3'b011</code>. Chỉ còn <code>rst_n</code>, vốn được xử lý ở tầng cao hơn
+<code>case</code> (RTL dòng 21). Đây là cách chứng minh tính bất biến INV-2 mà không cần assertion nào:
+nó đúng <strong>về mặt cấu trúc</strong>, không phải về mặt hành vi.</p>
+<p>So sánh với phương án "khoá 30 giây": ở 100 kHz, đếm 30 s cần 22 bit ⇒ <strong>+22 flip-flop</strong>,
+gần bằng toàn bộ 23 FF hiện có. Thiết kế đổi sự tiện lợi của người dùng lấy việc <strong>không
+tốn một flip-flop nào</strong> cho cơ chế khoá.</p>
+<h2 id="3-doc-ma-nguon-rtl-lam-gi-tung-dong-quan-trong">3. Đọc mã nguồn: RTL làm gì, từng dòng quan trọng</h2>
+<p>Module đã tổng hợp là <code>f03_lock_scaffold_explicit</code> (bằng chứng: <code>synth_stat.txt</code> ghi
+<code>=== f03_lock_scaffold_explicit ===</code>). Ba đoạn đáng đọc kỹ.</p>
+<p><strong>Đoạn 1 — con trỏ ghi và điểm kết thúc lần thử (dòng 26–33):</strong></p>
+<pre><code class="language-systemverilog">                WAIT_ST: if(digit_valid) begin
+                    case(pos)
+                        0: begin d0&lt;=digit; pos&lt;=1; end
+                        1: begin d1&lt;=digit; pos&lt;=2; end
+                        2: begin d2&lt;=digit; pos&lt;=3; end
+                        3: begin d3&lt;=digit; pos&lt;=0; state&lt;=CHECK_ST; end
+                    endcase
+                end
+</code></pre>
+<p>Ba nhánh đầu giống hệt nhau về cấu trúc; nhánh thứ tư khác ở <strong>hai</strong> chỗ: <code>pos&lt;=0</code> (đóng
+vòng) và <code>state&lt;=CHECK_ST</code> (kết thúc lần thử). Điều tinh tế: việc nạp <code>d3</code> và việc chuyển
+trạng thái xảy ra <strong>cùng một cạnh clock</strong>. Vì thế ở chu kỳ <code>CHECK_ST</code>, <code>d3</code> đã sẵn sàng —
+không cần chu kỳ chờ. Nếu tách thành hai chu kỳ, độ trễ sẽ là 3 chứ không phải 2.</p>
+<p><strong>Đoạn 2 — logic chống dò (dòng 34–42), trái tim của đề:</strong></p>
+<pre><code class="language-systemverilog">                CHECK_ST: begin
+                    if(d0==SECRET0 &amp;&amp; d1==SECRET1 &amp;&amp; d2==SECRET2 &amp;&amp; d3==SECRET3) begin
+                        fails&lt;=0; state&lt;=UNLOCK_ST;
+                    end else if(fails==2) begin
+                        fails&lt;=3; state&lt;=LOCKED_ST;
+                    end else begin
+                        fails&lt;=fails+1'b1; state&lt;=WAIT_ST;
+                    end
+                end
+</code></pre>
+<p>Dòng <code>fails&lt;=0;</code> trong nhánh đúng là <strong>toàn bộ</strong> câu trả lời cho Charter mục 2 câu 3. Nó
+biến <code>fails</code> từ "tổng số lần sai" thành "số lần sai kể từ lần đúng gần nhất". Xoá dòng đó
+đi, mạch vẫn biên dịch, vẫn tổng hợp, vẫn qua mọi ca kiểm thử của testbench hiện tại — và
+vẫn <strong>sai hoàn toàn so với đề</strong>. Đây chính xác là "chỗ hay tắc" mà Charter mục 10 cảnh báo.</p>
+<p>Chi tiết thứ hai: điều kiện là <code>fails==2</code>, không phải <code>fails==3</code>. Vì kiểm tra xảy ra
+<strong>trước</strong> khi tăng, nên <code>fails==2</code> nghĩa là "hai lần trước đã sai, lần này là lần thứ ba".
+Đổi thành <code>fails==3</code> sẽ khoá ở lần thứ tư — lỗi off-by-one kinh điển.</p>
+<p><strong>Đoạn 3 — nơi có khiếm khuyết (dòng 43–45):</strong></p>
+<pre><code class="language-systemverilog">                UNLOCK_ST: state&lt;=WAIT_ST;
+                LOCKED_ST: state&lt;=LOCKED_ST;
+                default: state&lt;=WAIT_ST;
+</code></pre>
+<p>Dòng <code>UNLOCK_ST</code> chỉ làm <strong>một</strong> việc: chuyển trạng thái. Nó không xét <code>digit_valid</code>. Hậu
+quả: chữ số nào đến trong chu kỳ này bị <strong>mất hẳn</strong>. Đây là nguyên nhân trực tiếp của lỗi
+mô phỏng, phán xử đầy đủ ở <code>05_VERIFICATION/known_issues.md</code>.</p>
+<p>Dòng <code>default</code> thì đúng về ý (đưa mã trạng thái bất hợp lệ về nơi an toàn) nhưng <strong>chưa
+đủ</strong>: nó không xoá <code>pos</code> và <code>fails</code>, nên sau một sự cố, khối trở lại hoạt động với con trỏ
+lệch pha.</p>
+<h2 id="4-vi-sao-chon-kien-truc-nay">4. Vì sao chọn kiến trúc này</h2>
+<p>Kiến trúc đã chọn — <strong>đệm bốn chữ số rồi so một lượt</strong> — không phải kiến trúc rẻ nhất. Bản
+"so từng chữ số ngay khi nhập" (streaming) chỉ cần ~8 FF thay vì 23. Vậy tại sao?</p>
+<p><strong>Lý do 1 — an toàn trước tấn công thời gian.</strong> Bản streaming rất dễ bị cám dỗ thoát sớm:
+"chữ số đầu đã sai rồi, cần gì chờ ba chữ số nữa". Nếu làm vậy, thời gian phản hồi rò rỉ
+thông tin: kẻ tấn công biết chữ số nào đúng bằng cách bấm giờ. Bản hiện tại luôn mất <strong>đúng
+2 chu kỳ</strong> sau chữ số thứ tư, bất kể mã sai ở đâu.</p>
+<p><strong>Lý do 2 — dạy được hiện tượng constant-folding.</strong> Khi so sánh 16 bit với hằng số, ta thấy
+tận mắt cách Yosys biến một mệnh đề logic thành <strong>cực tính chân cổng</strong>. Bản streaming giấu
+hiện tượng này (chỉ còn so 4 bit). Với một đề dùng để giảng dạy, đây là giá trị thật.</p>
+<p><strong>Lý do 3 — mở đường cho tính năng tương lai.</strong> Nếu sau này cho phép đổi mã lúc chạy
+(Charter mục 3 hiện liệt vào ngoài phạm vi), bộ đệm 16 bit đã sẵn ở đó.</p>
+<p><strong>Nhưng phải nói thẳng cái giá:</strong> 23 FF vượt ước lượng Charter mục 10 (6–8 ô nhớ) gần <strong>ba
+lần</strong>. Với công suất tuần tự chiếm <strong>91,4 %</strong> tổng công suất, đây cũng là khoản chi công
+suất lớn nhất. Một sinh viên bảo vệ đề này <strong>phải</strong> nêu được cả ba lý do trên; nếu chỉ nói
+"em làm thế vì thấy dễ" thì đó là 15 flip-flop lãng phí không có biện hộ.</p>
+<h2 id="5-cach-thuc-hien-lo-trinh-8-buoc-tu-dac-ta-toi-gdsii">5. Cách thực hiện — lộ trình 8 bước từ đặc tả tới GDSII</h2>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th style="text-align: right;">#</th>
+<th>Bước</th>
+<th>Đầu ra phải có</th>
+<th>Trạng thái F03</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: right;">1</td>
+<td><strong>Chốt hợp đồng hành vi</strong> — viết <code>functional_spec.md</code> với INV-1…INV-9 <strong>trước khi</strong> viết RTL</td>
+<td>Bảng chuyển trạng thái + danh sách invariant</td>
+<td>✅ đã có (nhưng viết <em>sau</em> RTL — xem §9)</td>
+</tr>
+<tr>
+<td style="text-align: right;">2</td>
+<td><strong>Viết mô hình chuẩn bằng ngôn ngữ khác</strong> (Python)</td>
+<td><code>reference_model.py</code> chạy PASS</td>
+<td>✅ <code>python_reference_run.log</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">3</td>
+<td><strong>Viết RTL</strong> đúng phong cách FSM: enum tường minh, có <code>default</code>, reset rõ ràng</td>
+<td><code>.sv</code> biên dịch sạch</td>
+<td>✅ <code>iverilog_compile.log</code> = "(khong co loi)"</td>
+</tr>
+<tr>
+<td style="text-align: right;">4</td>
+<td><strong>Mô phỏng RTL</strong> với testbench phủ <strong>từng cung chuyển trạng thái</strong>, không phủ theo kịch bản</td>
+<td><code>simulation.log</code> không có <code>$fatal</code></td>
+<td>⚠️ <strong>FAIL tại t=176</strong></td>
+</tr>
+<tr>
+<td style="text-align: right;">5</td>
+<td><strong>Tổng hợp</strong> bằng Yosys + thư viện sky130</td>
+<td><code>synth_stat.txt</code>, <code>netlist.v</code></td>
+<td>✅ 88 cell, 23 FF</td>
+</tr>
+<tr>
+<td style="text-align: right;">6</td>
+<td><strong>Kiểm cấu trúc</strong>: đếm FF, đối chiếu với số bit khai báo trong RTL</td>
+<td>3+16+2+2 = 23 ✅ khớp</td>
+<td>✅</td>
+</tr>
+<tr>
+<td style="text-align: right;">7</td>
+<td><strong>STA</strong> với SDC nêu rõ 4 giả định</td>
+<td><code>timing_report_max.txt</code></td>
+<td>✅ slack 8,09 ns</td>
+</tr>
+<tr>
+<td style="text-align: right;">8</td>
+<td><strong>Physical design</strong> (floorplan → GDS) bằng LibreLane + sky130A</td>
+<td>GDS + DRC/LVS sạch</td>
+<td>⬜ chưa chạy</td>
+</tr>
+</tbody>
+</table></div>
+<p>Bước 4 là bước đang hỏng, và nó chặn mọi khẳng định về chức năng. <strong>Không được đi tiếp
+bước 8 khi bước 4 còn đỏ</strong> — có GDS của một mạch sai thì vẫn là mạch sai.</p>
+<p>Một chi tiết về thứ tự bị bỏ sót trong hồ sơ này: bước 6 (kiểm cấu trúc) đáng ra phải phát
+hiện sớm rằng 23 ≫ 6–8, và đặt câu hỏi "vì sao". Ở đây nó chỉ được dùng để xác nhận "có FF
+⇒ đúng là mạch tuần tự", tức dùng chưa hết công suất.</p>
+<h2 id="6-so-lieu-that-da-do-duoc-va-cach-doc-chung">6. Số liệu thật đã đo được và cách đọc chúng</h2>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Chỉ số</th>
+<th style="text-align: right;">Giá trị</th>
+<th>Nguồn</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Số cell</td>
+<td style="text-align: right;">88</td>
+<td><code>synth_stat.txt</code></td>
+</tr>
+<tr>
+<td>Flip-flop</td>
+<td style="text-align: right;">23</td>
+<td>″</td>
+</tr>
+<tr>
+<td>Diện tích</td>
+<td style="text-align: right;">892,1056 µm²</td>
+<td>″</td>
+</tr>
+<tr>
+<td>Startpoint → Endpoint</td>
+<td style="text-align: right;"><code>digit_valid</code> → <code>_131_</code> (= <code>d0[0]</code>)</td>
+<td><code>sta/summary.txt</code></td>
+</tr>
+<tr>
+<td>Data arrival</td>
+<td style="text-align: right;">1,78 ns</td>
+<td><code>sta/timing_report_max.txt</code></td>
+</tr>
+<tr>
+<td>Slack</td>
+<td style="text-align: right;">8,09 ns (MET)</td>
+<td>″</td>
+</tr>
+<tr>
+<td>Số cell trên đường tới hạn</td>
+<td style="text-align: right;">5</td>
+<td>″</td>
+</tr>
+<tr>
+<td>Công suất tổng</td>
+<td style="text-align: right;">1,08e-04 W</td>
+<td><code>power/power_report.txt</code></td>
+</tr>
+<tr>
+<td>— Sequential</td>
+<td style="text-align: right;">9,86e-05 W = <strong>91,4 %</strong></td>
+<td>″</td>
+</tr>
+<tr>
+<td>— Combinational</td>
+<td style="text-align: right;">9,29e-06 W = 8,6 %</td>
+<td>″</td>
+</tr>
+<tr>
+<td>— Internal / Switching</td>
+<td style="text-align: right;">94,7 % / 5,3 %</td>
+<td>″</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Những số này CHỨNG MINH:</strong>
+- Thiết kế <strong>tổng hợp được</strong> ra standard cell sky130 thật, không phải mã giả.
+- Thiết kế <strong>là mạch tuần tự</strong> (23 cell tuần tự &gt; 0), đúng phân loại Charter.
+- Với <strong>giả định</strong> period 10 ns và IO delay 1 ns, đường dài nhất chỉ dùng hết 1,78/9,87 ns
+  ⇒ timing <strong>không phải</strong> ràng buộc của đề này.
+- Kiểm toán 23 FF = 3 + 16 + 2 + 2 chứng minh <strong>không có thanh ghi nào bị suy ra ngoài ý
+  muốn</strong> (không latch, không FF thừa).
+- Công suất tuần tự 91,4 % chứng minh <strong>flip-flop là khoản chi chính</strong> ⇒ muốn tiết kiệm thì
+  phải bớt FF, không phải bớt cổng logic.</p>
+<p><strong>Những số này KHÔNG chứng minh:</strong>
+- <strong>Không</strong> chứng minh mạch đúng chức năng. Mô phỏng FAIL (<code>known_issues.md</code>).
+- <strong>Không</strong> cho phép nói "F03 chạy được ở 100 MHz". <code>10,0 ns</code> là giả định khởi điểm trong
+  <code>design.sdc</code>, không phải yêu cầu hệ thống; và đây là STA <strong>sau tổng hợp</strong>, chưa có ký
+  sinh dây RC, chưa có CTS, chỉ một góc PVT (<code>tt_025C_1v80</code>).
+- <strong>Không</strong> chứng minh diện tích 892 µm² là diện tích cuối. Chưa chạy floorplan; với thiết
+  kế nhỏ thế này, diện tích nhiều khả năng do <strong>số chân IO</strong> quyết định (<code>floorplan/README.md</code>).
+- <strong>Không</strong> chứng minh công suất 1,08e-04 W là công suất thật — đây là ước lượng của OpenSTA
+  với activity mặc định, không phải từ VCD của một ca chạy thật.
+- <strong>Không</strong> áp dụng cho module mà testbench kiểm: sim chạy <code>f03_lock_scaffold</code>, tổng hợp
+  chạy <code>f03_lock_scaffold_explicit</code> (<code>known_issues.md</code> §3.3).</p>
+<p><strong>Hai con số đáng đặt câu hỏi nhất:</strong></p>
+<p><em>88 cell so với ước lượng Charter 230–330.</em> Nhỏ hơn gần ba lần. Hai nguyên nhân đã xác
+định: (a) comparator bị hằng-số-hoá còn 5 cổng, (b) thiết kế <strong>thiếu</strong> 5 bit ra mà Charter
+mục 4 đòi. Khi bổ sung đủ cổng ra, con số sẽ tăng.</p>
+<p><em>23 FF so với ước lượng Charter 6–8.</em> Lớn hơn gần ba lần. Nguyên nhân duy nhất: 16 FF bộ
+đệm mã. Ba thứ Charter thật sự hỏi (<code>pos</code> 2 + <code>fails</code> 2 + <code>state</code> 3) đúng bằng <strong>7 FF</strong> —
+nằm gọn trong khoảng Charter dự đoán.</p>
+<h2 id="7-tra-loi-cac-cau-hoi-ky-thuat-cua-charter-muc-2">7. Trả lời các câu hỏi kỹ thuật của Charter (mục 2)</h2>
+<p><strong>Câu 1 — Ba thứ phải nhớ cùng lúc tốn tổng bao nhiêu ô nhớ?</strong>
+<strong>7 flip-flop</strong>: <code>pos[1:0]</code> = 2 (<code>_147_</code>,<code>_148_</code>), <code>fails[1:0]</code> = 2 (<code>_149_</code>,<code>_150_</code>),
+<code>state[2:0]</code> = 3 (<code>_128_</code>…<code>_130_</code>). Khớp ước lượng Charter mục 10 (6–8). Tổng FF của thiết
+kế là <strong>23</strong> vì có thêm 16 FF bộ đệm mã nhập — không thuộc ba thứ Charter hỏi. Một ghi chú
+đáng nêu: <code>state</code> dùng 3 bit cho 4 trạng thái vì khai báo <code>logic [2:0]</code>; thu về <code>logic [1:0]</code>
+sẽ tiết kiệm 1 FF mà không mất gì.</p>
+<p><strong>Câu 2 — Vì sao khoá tạm chỉ thoát được bằng reset, và đánh đổi cái gì?</strong>
+Vì <code>LOCKED_ST</code> là trạng thái hấp thụ về mặt <strong>cấu trúc</strong>: <code>case(state)</code> không có nhánh nào
+rời nó, nên trong netlist không tồn tại đường logic nào đưa <code>state</code> khỏi <code>3'b011</code>. <code>rst_n</code>
+được xử lý ngoài <code>case</code> (dòng 21) nên là lối ra duy nhất. <strong>Đánh đổi:</strong> được 0 flip-flop
+cho cơ chế khoá (một timeout 30 s ở 100 kHz cần ~22 FF, gần gấp đôi phần điều khiển hiện
+tại) và một tính chất bất biến chứng minh được bằng cấu trúc; mất trải nghiệm người dùng và
+phải có hạ tầng reset vật lý có kiểm soát ở ngoài chip.</p>
+<p><strong>Câu 3 — Bằng chứng nào chứng minh 'sai ba lần LIÊN TIẾP'?</strong>
+Dòng 36: <code>fails&lt;=0;</code> trong nhánh mã đúng. Mỗi lần thử đúng xoá sạch bộ đếm ⇒ <code>fails</code> đo số
+lần sai <em>kể từ lần đúng gần nhất</em>. Đó là bằng chứng <strong>đọc mã</strong>. Bằng chứng <strong>thực thi</strong>
+tương ứng phải là ca C-2' (sai 2 → đúng → sai 2 ⇒ tổng 4 lần sai mà không khoá), và ca này
+<strong>hiện chưa có trong testbench</strong> (<code>corner_cases.md</code> §2). Phải nói thẳng: khẳng định này mới
+được chứng minh một nửa.</p>
+<h2 id="8-tra-loi-cau-phan-tich-rieng-charter-muc-9">8. Trả lời câu phân tích riêng (Charter mục 9)</h2>
+<blockquote>
+<p><em>Thiết kế lưu mã đúng ở đâu — hằng số trong RTL hay thanh ghi?</em></p>
+</blockquote>
+<p><strong>Lựa chọn: hằng số</strong> — <code>parameter logic [3:0] SECRET0=4'd1, SECRET1=4'd2, SECRET2=4'd3,
+SECRET3=4'd4</code> (RTL dòng 5–8).</p>
+<p><strong>Hệ quả đo được, bốn bằng chứng:</strong></p>
+<ol>
+<li>
+<p><strong>0 flip-flop cho mã.</strong> Kiểm toán 23 FF: 3 (<code>state</code>) + 16 (<code>d0..d3</code>) + 2 (<code>pos</code>) + 2
+   (<code>fails</code>) = 23. Không thừa một FF nào. Phương án "mã trong thanh ghi" sẽ cho 39.</p>
+</li>
+<li>
+<p><strong>Comparator co từ ~20 cổng xuống 5 cổng.</strong> <code>netlist.v</code> dòng 114–148 chỉ có 4 cổng
+   4-đầu-vào (<code>nor4b_1</code> ×3, <code>nor4bb_1</code> ×1) + 1 <code>and4_1</code> + 1 <code>nand4_1</code> (bản đảo).</p>
+</li>
+<li>
+<p><strong>Mã bí mật biến thành cực tính chân cổng — và đọc được từ netlist:</strong></p>
+</li>
+</ol>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Cổng</th>
+<th>Chân thường (phải = 0)</th>
+<th>Chân <code>_N</code> (phải = 1)</th>
+<th style="text-align: right;">⇒ digit</th>
+<th style="text-align: right;">SECRET</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>_068_</code></td>
+<td>d0[3],d0[2],d0[1]</td>
+<td>d0[0]</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1 ✅</td>
+</tr>
+<tr>
+<td><code>_069_</code></td>
+<td>d1[3],d1[2],d1[0]</td>
+<td>d1[1]</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">2 ✅</td>
+</tr>
+<tr>
+<td><code>_066_</code></td>
+<td>d2[3],d2[2]</td>
+<td>d2[1],d2[0]</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3 ✅</td>
+</tr>
+<tr>
+<td><code>_067_</code></td>
+<td>d3[3],d3[1],d3[0]</td>
+<td>d3[2]</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">4 ✅</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Đây là hệ quả bảo mật thật:</strong> ai có netlist hoặc soi được layout là có mã. Trong sản
+   phẩm thật, mã phải nằm trong OTP/eFuse — nhưng đó là <strong>ngoài phạm vi</strong> Charter mục 3.</p>
+<ol start="4">
+<li><strong>Đường tới hạn không đi qua comparator.</strong> Endpoint là <code>_131_</code> (= <code>d0[0]</code>), tức đường
+   nạp. Hằng-số-hoá làm comparator rẻ tới mức nó biến mất khỏi 10 đường chậm nhất.</li>
+</ol>
+<p><strong>Kết luận cân bằng:</strong> hằng số thắng về diện tích, công suất và timing; thua hoàn toàn về
+bảo mật và tính linh hoạt. Với phạm vi Charter (mã cố định, không đổi lúc chạy), đây là
+lựa chọn đúng — miễn là <strong>ghi rõ giới hạn bảo mật</strong> thay vì im lặng.</p>
+<h2 id="9-nhung-cho-sinh-vien-hay-sai-va-cach-phat-hien">9. Những chỗ sinh viên hay sai và cách phát hiện</h2>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th style="text-align: right;">#</th>
+<th>Sai lầm</th>
+<th>Hậu quả</th>
+<th>Phát hiện bằng bằng chứng nào</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: right;">1</td>
+<td><strong>Không xoá <code>fails</code> khi nhập đúng</strong></td>
+<td>Thành "sai ba lần tổng cộng". Người dùng bình thường bị khoá sau vài tuần. Đúng "chỗ hay tắc" Charter mục 10.</td>
+<td>Chạy ca <strong>C-2'</strong>: sai 2 → đúng → sai 2. Nếu <code>locked</code> lên ⇒ sai. Hoặc đọc mã: tìm <code>fails&lt;=0</code> trong nhánh đúng — nếu không có, sai.</td>
+</tr>
+<tr>
+<td style="text-align: right;">2</td>
+<td><strong>Quên rằng trạng thái xung (<code>UNLOCK_ST</code>) tiêu tốn một chu kỳ</strong></td>
+<td>Chữ số đầu của lần thử kế bị nuốt. <strong>Đây chính là lỗi đang có trong F03.</strong></td>
+<td><code>simulation.log</code> <code>$fatal</code> tại t=176; dựng lại bảng sự kiện ở <code>known_issues.md</code> §2. Cách phát hiện chủ động: liệt kê mọi cung chuyển trạng thái, với mỗi cung hỏi "nếu <code>digit_valid=1</code> trong chu kỳ này thì sao?"</td>
+</tr>
+<tr>
+<td style="text-align: right;">3</td>
+<td><strong>Off-by-one ngưỡng khoá</strong> (<code>fails==3</code> thay vì <code>fails==2</code>)</td>
+<td>Khoá ở lần sai thứ <strong>tư</strong>.</td>
+<td>Chạy ca C-3 và đếm chính xác số lần thử trước khi <code>locked</code> lên. Hoặc đọc mã: nhớ rằng so sánh xảy ra <em>trước</em> khi tăng.</td>
+</tr>
+<tr>
+<td style="text-align: right;">4</td>
+<td><strong>Giữ <code>digit_valid</code> ở mức cao nhiều chu kỳ</strong> (lỗi tích hợp, không phải lỗi RTL)</td>
+<td>Nạp nhiều chữ số cho một lần nhấn phím; mã người dùng hỏng hoàn toàn.</td>
+<td>Xem waveform: <code>pos</code> nhảy nhiều bậc trong một lần nhấn. Ca C-6 (<code>corner_cases.md</code> §2) bắt đúng điều này. Cách chặn: ghi vào hợp đồng interface (<code>control.md</code> §4).</td>
+</tr>
+<tr>
+<td style="text-align: right;">5</td>
+<td><strong>Tưởng <code>unlock</code> là mức, không phải xung</strong></td>
+<td>Tầng ngoài lấy mẫu ở clock chậm hơn sẽ bỏ sót; hoặc tệ hơn, giữ cửa mở mãi.</td>
+<td>INV-6 (<code>unlock |=&gt; !unlock</code>). Trên waveform: <code>unlock</code> chỉ cao đúng 1 chu kỳ (<code>timing_diagram.md</code> §1, C10).</td>
+</tr>
+<tr>
+<td style="text-align: right;">6</td>
+<td><strong>Quên nhánh <code>default</code> cho mã trạng thái thừa</strong></td>
+<td>3 bit ⇒ 4 mã thừa; nếu không xử lý, tool suy ra latch hoặc mạch treo sau SEU.</td>
+<td>Đọc RTL tìm <code>default</code>. Kiểm netlist: đếm cell latch (<code>dlxtp</code>, <code>dlatch</code>) — F03 có <strong>0</strong> ⇒ sạch. F03 <strong>có</strong> <code>default</code> ✅ nhưng <strong>không</strong> xoá <code>pos</code>/<code>fails</code> — thiếu sót nhỏ hơn, xem <code>fsm.md</code> §6.</td>
+</tr>
+<tr>
+<td style="text-align: right;">7</td>
+<td><strong>Đọc slack 8,09 ns thành "chạy được ở 550 MHz"</strong></td>
+<td>Phát biểu vượt mức, sai về phương pháp.</td>
+<td><code>design.sdc</code> ghi rõ 10 ns là <em>giả định khởi điểm</em>; <code>timing.md</code> §3 liệt 4 giả định (period, IO delay, PVT, chưa có RC). STA sau tổng hợp không phải STA sign-off.</td>
+</tr>
+<tr>
+<td style="text-align: right;">8</td>
+<td><strong>Nhầm số flip-flop "cần" với số flip-flop "có"</strong></td>
+<td>Trả lời Charter mục 2 câu 1 là "23" trong khi câu hỏi chỉ hỏi ba thứ (= 7).</td>
+<td>Kiểm toán từng FF trong netlist theo tên <code>.Q()</code>: <code>state[0..2]</code>, <code>d0..d3</code>, <code>pos[0..1]</code>, <code>fails[0..1]</code>. Phân loại rồi mới cộng.</td>
+</tr>
+<tr>
+<td style="text-align: right;">9</td>
+<td><strong>Testbench kiểm module A, tổng hợp module B</strong></td>
+<td>Mọi số liệu vật lý nói về một thiết kế chưa từng được mô phỏng.</td>
+<td>So <code>f03_tb.sv</code> dòng 7 (<code>f03_lock_scaffold</code>) với <code>synth_stat.txt</code> (<code>f03_lock_scaffold_explicit</code>). <strong>F03 đang mắc lỗi này.</strong></td>
+</tr>
+<tr>
+<td style="text-align: right;">10</td>
+<td><strong>Viết đặc tả sau khi viết RTL</strong></td>
+<td>Đặc tả trở thành bản mô tả RTL, không còn khả năng bắt lỗi RTL.</td>
+<td>Dấu hiệu: đặc tả "đúng" ở mọi chỗ RTL sai. Cách chặn: viết mô hình chuẩn bằng ngôn ngữ khác <strong>trước</strong> — F03 đã làm đúng, và chính mô hình Python là thứ chứng minh RTL sai.</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="10-cau-hoi-mentor-nen-dat-khi-bao-ve">10. Câu hỏi mentor nên đặt khi bảo vệ</h2>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th style="text-align: right;">#</th>
+<th>Câu hỏi</th>
+<th>Đáp án mong đợi</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: right;">1</td>
+<td>Chỉ cho tôi <strong>dòng lệnh</strong> làm cho đây là "sai ba lần liên tiếp" chứ không phải "tổng cộng".</td>
+<td>Dòng 36, <code>fails&lt;=0;</code> trong nhánh mã đúng. Kèm ca C-2' để chứng minh bằng mô phỏng — và thừa nhận ca đó chưa có.</td>
+</tr>
+<tr>
+<td style="text-align: right;">2</td>
+<td>Thiết kế có 23 flip-flop. Charter nói 6–8. Ai sai?</td>
+<td>Không ai sai. Charter hỏi ba thứ (<code>pos</code>+<code>fails</code>+<code>state</code> = 7 FF, nằm trong 6–8). 16 FF còn lại là bộ đệm mã — lựa chọn kiến trúc có ý thức, đổi diện tích lấy chống-timing-attack và khả năng mở rộng.</td>
+</tr>
+<tr>
+<td style="text-align: right;">3</td>
+<td>Đường tới hạn kết thúc ở <code>_131_</code>. <code>_131_</code> là cái gì, và vì sao nó chậm nhất?</td>
+<td><code>_131_.Q = d0[0]</code> (netlist dòng 490–493) — bit 0 của thanh ghi chữ số đầu. Chậm nhất vì: (a) chịu 1,00 ns input delay của SDC, (b) cổng <code>_083_ nor3</code> có fanout 4 lái 4 mux, tốn 0,46/0,78 ns logic. <strong>Không phải</strong> vì nó sâu.</td>
+</tr>
+<tr>
+<td style="text-align: right;">4</td>
+<td>Mã bí mật nằm ở đâu trong silicon? Chỉ cho tôi.</td>
+<td>Không nằm ở flip-flop nào. Nó nằm ở <strong>cực tính chân cổng</strong> của <code>_066_</code>…<code>_069_</code>. Giải mã ra đúng 1,2,3,4. Hệ quả: đọc netlist là đọc được mã.</td>
+</tr>
+<tr>
+<td style="text-align: right;">5</td>
+<td>Mô phỏng FAIL. Lỗi ở RTL, mô hình chuẩn, testbench hay công cụ?</td>
+<td>RTL. Lập luận ba bước: (a) <code>iverilog_compile.log</code> sạch ⇒ không phải công cụ; (b) mô hình Python PASS và quy định chữ số sau <code>UNLOCK</code> phải được nhận ⇒ không phải mô hình; (c) khiếm khuyết có mặt trong <strong>cả hai</strong> module RTL viết theo hai phong cách ⇒ lỗi thiết kế, không phải gõ nhầm.</td>
+</tr>
+<tr>
+<td style="text-align: right;">6</td>
+<td>Nếu đổi <code>unlock</code> từ Moore sang Mealy thì lỗi đó còn không?</td>
+<td>Không. Trạng thái <code>UNLOCK_ST</code> biến mất, không còn chu kỳ nào nuốt chữ số. Đổi lại: <code>unlock</code> thành hàm của đầu vào ⇒ có thể glitch, và độ trễ giảm từ 2 chu kỳ xuống 1. Đây đúng là đánh đổi mà đề <strong>F04</strong> khảo sát trực tiếp.</td>
+</tr>
+<tr>
+<td style="text-align: right;">7</td>
+<td>Vì sao <code>state</code> dùng 3 bit cho 4 trạng thái? Tool có tự thu lại không?</td>
+<td>Vì khai báo <code>logic [2:0]</code>. Tool <strong>không</strong> thu: netlist có đủ <code>_128_</code>,<code>_129_</code>,<code>_130_</code> và tổng FF là 23 = 3+16+2+2. Thu về <code>logic [1:0]</code> tiết kiệm 1 FF (4,3 % số FF, mà FF chiếm 91,4 % công suất).</td>
+</tr>
+<tr>
+<td style="text-align: right;">8</td>
+<td>Slack 8,09 ns. Vậy mạch chạy được bao nhiêu MHz?</td>
+<td><strong>Không trả lời được từ số này.</strong> 10 ns là giả định trong <code>design.sdc</code>; đây là STA sau tổng hợp, chưa có RC dây, chưa có CTS, một góc PVT. Muốn biết phải chạy STA sau routing, nhiều góc.</td>
+</tr>
+<tr>
+<td style="text-align: right;">9</td>
+<td>Chuyện gì xảy ra nếu <code>state</code> bị nhiễu thành <code>3'b101</code>?</td>
+<td><code>default</code> (dòng 45) đưa về <code>WAIT_ST</code>. Nhưng <code>pos</code> và <code>fails</code> <strong>không</strong> được xoá ⇒ lần nhập kế lệch pha và ngưỡng khoá có thể đã bị tiêu hao. Bản vá: thêm <code>pos&lt;=0; fails&lt;=0;</code> vào <code>default</code>.</td>
+</tr>
+<tr>
+<td style="text-align: right;">10</td>
+<td>Hồ sơ này chứng minh được gì, và chưa chứng minh được gì?</td>
+<td>Chứng minh: tổng hợp được (88 cell), là mạch tuần tự (23 FF), đủ nhanh với giả định 10 ns (slack 8,09), mô hình chuẩn đúng. Chưa chứng minh: chức năng đúng (sim FAIL), giao diện đúng Charter mục 4 (thiếu 5 bit ra), timing thật (chưa P&amp;R), DRC/LVS (chưa chạy).</td>
+</tr>
+<tr>
+<td style="text-align: right;">11</td>
+<td>Testbench khởi tạo module nào? Yosys tổng hợp module nào?</td>
+<td><code>f03_lock_scaffold</code> vs <code>f03_lock_scaffold_explicit</code>. <strong>Hai module khác nhau.</strong> Đây là đứt gãy truy vết phải vá (<code>known_issues.md</code> P-3), độc lập với lỗi chức năng.</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="11-gioi-han-da-chung-minh-duoc-gi-chua-chung-minh-duoc-gi">11. Giới hạn: đã chứng minh được gì, chưa chứng minh được gì</h2>
+<p><strong>Đã chứng minh, có bằng chứng file:</strong></p>
+<ul>
+<li>RTL biên dịch sạch bằng Icarus Verilog 12.0 — <code>iverilog_compile.log</code>.</li>
+<li>RTL tổng hợp được ra 88 standard cell sky130, 23 flip-flop, 892,1056 µm² — <code>synth_stat.txt</code>.</li>
+<li>Không có latch nào bị suy ra ngoài ý muốn; kiểm toán FF khớp chính xác với khai báo RTL.</li>
+<li>Với giả định period 10 ns, IO delay 1 ns, góc <code>tt_025C_1v80</code>: đường dài nhất 1,78 ns,
+  slack 8,09 ns (MET) — <code>timing_report_max.txt</code>.</li>
+<li>Ước lượng công suất 1,08e-04 W, trong đó tuần tự 91,4 % — <code>power_report.txt</code>.</li>
+<li>Mô hình chuẩn Python độc lập chạy PASS — <code>python_reference_run.log</code>.</li>
+<li>Mã bí mật được hằng-số-hoá hoàn toàn, chiếm 0 flip-flop, và đọc được từ netlist.</li>
+</ul>
+<p><strong>Chưa chứng minh được — và cần gì để chứng minh:</strong></p>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Chưa chứng minh</th>
+<th>Cần gì</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Chức năng đúng đặc tả</strong></td>
+<td>Sửa khiếm khuyết §3 (<code>known_issues.md</code> P-1/P-2), chạy lại mô phỏng tới <code>$finish</code></td>
+</tr>
+<tr>
+<td>3/4 ca bắt buộc Charter mục 8</td>
+<td>Như trên — testbench hiện dừng ở ca thứ hai</td>
+</tr>
+<tr>
+<td>"Sai ba lần <strong>liên tiếp</strong>" bằng thực thi</td>
+<td>Thêm ca C-2' (<code>corner_cases.md</code> §2)</td>
+</tr>
+<tr>
+<td>Giao diện đúng Charter mục 4</td>
+<td>Bổ sung <code>uo_out[3:2]</code> (vị trí) và <code>uo_out[6:4]</code> (số lần sai, <strong>3 bit</strong>) + wrapper Tiny Tapeout; rồi chạy lại toàn bộ tổng hợp/STA/power</td>
+</tr>
+<tr>
+<td>Bằng chứng mô phỏng áp dụng cho module đã tổng hợp</td>
+<td>Thống nhất một top duy nhất (<code>known_issues.md</code> P-3)</td>
+</tr>
+<tr>
+<td>Netlist tương đương RTL</td>
+<td>Mô phỏng gate-level (L4) — ⬜ chưa chạy</td>
+</tr>
+<tr>
+<td>Hành vi sau power-up khi FF ở <code>X</code></td>
+<td>Mô phỏng gate-level có thả <code>X</code> — ⬜ chưa chạy</td>
+</tr>
+<tr>
+<td>Timing thật</td>
+<td>STA <strong>sau routing</strong>, nhiều góc PVT — cần LibreLane + sky130A</td>
+</tr>
+<tr>
+<td>Diện tích cuối cùng</td>
+<td>Floorplan + placement + routing — ⬜ chưa chạy</td>
+</tr>
+<tr>
+<td>Không có glitch trên <code>unlock</code></td>
+<td>Mô phỏng post-layout có back-annotate SDF (L5) — ⬜ chưa chạy</td>
+</tr>
+<tr>
+<td>DRC/LVS sạch</td>
+<td>Magic/KLayout + Netgen — ⬜ chưa chạy</td>
+</tr>
+<tr>
+<td>Mã trạng thái thừa thật sự về <code>WAIT_ST</code> trong silicon</td>
+<td>Mô phỏng gate-level ép <code>state</code> vào <code>3'd4</code>…<code>3'd7</code> — ⬜ chưa chạy</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Không thuộc phạm vi đề, không được tuyên bố:</strong> tape-out, chế tạo, kiểm tra sau chế tạo,
+ASIC sign-off, thiết kế analog mức transistor, physical design tự làm (Charter mục 3).</p>
+<hr>
+<p><em>Phiên bản: v1.0 · Ngày: 2026-09-24</em></p>
+</main>
+<footer class="doc">
+  Tài liệu sinh từ <code>implementation-notes_F03.md</code>.
+  Mọi số liệu đều kèm công cụ, phiên bản và lệnh tái lập trong
+  <code>07_TRACEABILITY/evidence_index.md</code>.
+</footer>
+</div>
+<script>
+(function(){
+  var b=document.createElement('button');
+  b.className='themebtn'; b.type='button';
+  function lbl(){var t=document.documentElement.getAttribute('data-theme');
+    return t==='dark'?'Nen sang':(t==='light'?'Nen toi':'Doi nen');}
+  b.textContent=lbl();
+  try{var s=localStorage.getItem('rtl2gds-theme'); if(s)document.documentElement.setAttribute('data-theme',s);}catch(e){}
+  b.textContent=lbl();
+  b.addEventListener('click',function(){
+    var cur=document.documentElement.getAttribute('data-theme');
+    var mq=window.matchMedia('(prefers-color-scheme: dark)').matches;
+    var next=cur?(cur==='dark'?'light':'dark'):(mq?'light':'dark');
+    document.documentElement.setAttribute('data-theme',next);
+    try{localStorage.setItem('rtl2gds-theme',next);}catch(e){}
+    b.textContent=lbl();
+  });
+  document.body.appendChild(b);
+})();
+</script>
+</body>
+</html>

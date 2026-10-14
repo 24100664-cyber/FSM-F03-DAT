@@ -1,0 +1,138 @@
+VERSION 5.7 ;
+  NOWIREEXTENSIONATPIN ON ;
+  DIVIDERCHAR "/" ;
+  BUSBITCHARS "[]" ;
+MACRO f03_lock_scaffold_explicit
+  CLASS BLOCK ;
+  FOREIGN f03_lock_scaffold_explicit ;
+  ORIGIN 0.000 0.000 ;
+  SIZE 65.060 BY 75.780 ;
+  PIN VGND
+    DIRECTION INOUT ;
+    USE GROUND ;
+    PORT
+      LAYER met4 ;
+        RECT 24.340 10.640 25.940 62.800 ;
+    END
+    PORT
+      LAYER met5 ;
+        RECT 5.520 30.030 59.340 31.630 ;
+    END
+  END VGND
+  PIN VPWR
+    DIRECTION INOUT ;
+    USE POWER ;
+    PORT
+      LAYER met4 ;
+        RECT 21.040 10.640 22.640 62.800 ;
+    END
+    PORT
+      LAYER met5 ;
+        RECT 5.520 26.730 59.340 28.330 ;
+    END
+  END VPWR
+  PIN clk
+    DIRECTION INPUT ;
+    USE SIGNAL ;
+    ANTENNAGATEAREA 0.852000 ;
+    PORT
+      LAYER met3 ;
+        RECT 0.000 57.160 0.600 57.760 ;
+    END
+  END clk
+  PIN digit[0]
+    DIRECTION INPUT ;
+    USE SIGNAL ;
+    ANTENNAGATEAREA 0.213000 ;
+    PORT
+      LAYER met3 ;
+        RECT 0.000 55.800 0.600 56.400 ;
+    END
+  END digit[0]
+  PIN digit[1]
+    DIRECTION INPUT ;
+    USE SIGNAL ;
+    ANTENNAGATEAREA 0.213000 ;
+    PORT
+      LAYER met3 ;
+        RECT 0.000 53.080 0.600 53.680 ;
+    END
+  END digit[1]
+  PIN digit[2]
+    DIRECTION INPUT ;
+    USE SIGNAL ;
+    ANTENNAGATEAREA 0.213000 ;
+    PORT
+      LAYER met3 ;
+        RECT 0.000 54.440 0.600 55.040 ;
+    END
+  END digit[2]
+  PIN digit[3]
+    DIRECTION INPUT ;
+    USE SIGNAL ;
+    ANTENNAGATEAREA 0.213000 ;
+    PORT
+      LAYER met3 ;
+        RECT 64.460 42.200 65.060 42.800 ;
+    END
+  END digit[3]
+  PIN digit_valid
+    DIRECTION INPUT ;
+    USE SIGNAL ;
+    ANTENNAGATEAREA 0.213000 ;
+    PORT
+      LAYER met3 ;
+        RECT 0.000 39.480 0.600 40.080 ;
+    END
+  END digit_valid
+  PIN locked
+    DIRECTION OUTPUT ;
+    USE SIGNAL ;
+    ANTENNADIFFAREA 0.702900 ;
+    PORT
+      LAYER met2 ;
+        RECT 38.730 0.000 39.010 0.280 ;
+    END
+  END locked
+  PIN rst_n
+    DIRECTION INPUT ;
+    USE SIGNAL ;
+    ANTENNAGATEAREA 0.196500 ;
+    PORT
+      LAYER met3 ;
+        RECT 0.000 51.720 0.600 52.320 ;
+    END
+  END rst_n
+  PIN unlock
+    DIRECTION OUTPUT ;
+    USE SIGNAL ;
+    ANTENNADIFFAREA 0.702900 ;
+    PORT
+      LAYER met2 ;
+        RECT 17.570 0.000 17.850 0.280 ;
+    END
+  END unlock
+  OBS
+      LAYER nwell ;
+        RECT 5.330 10.795 59.530 62.750 ;
+      LAYER li1 ;
+        RECT 5.520 10.795 59.340 62.645 ;
+      LAYER met1 ;
+        RECT 3.290 10.640 59.340 62.800 ;
+      LAYER met2 ;
+        RECT 3.310 0.560 57.870 62.745 ;
+        RECT 3.310 0.280 17.290 0.560 ;
+        RECT 18.130 0.280 38.450 0.560 ;
+        RECT 39.290 0.280 57.870 0.560 ;
+      LAYER met3 ;
+        RECT 0.600 58.160 64.460 62.725 ;
+        RECT 1.000 51.320 64.460 58.160 ;
+        RECT 0.600 43.200 64.460 51.320 ;
+        RECT 0.600 41.800 64.060 43.200 ;
+        RECT 0.600 40.480 64.460 41.800 ;
+        RECT 1.000 39.080 64.460 40.480 ;
+        RECT 0.600 10.715 64.460 39.080 ;
+  END
+END f03_lock_scaffold_explicit
+END LIBRARY
+

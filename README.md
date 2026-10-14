@@ -1,127 +1,94 @@
-# FSM-F03-DAT
+# F03 — FSM khoá số bốn chữ số có khoá tạm
 
-## 1. Giới thiệu dự án | Project Overview
+> 🔧 **ĐỀ NÀY ĐÃ ĐƯỢC VÁ LỖI**
+>
+> Mô phỏng ban đầu không đạt. Lỗi đã được chẩn đoán, vá và **xác minh lại bằng
+> công cụ thật**. Mọi số liệu trong hồ sơ là số liệu **sau khi vá**.
+>
+> * Mã nguồn gốc: [`08_ORIGINAL_SOURCE/`](08_ORIGINAL_SOURCE/) — giữ nguyên, quay lui được
+> * Nhật ký vá: [`08_ORIGINAL_SOURCE/PATCHLOG.md`](08_ORIGINAL_SOURCE/PATCHLOG.md)
+> * Chẩn đoán đầy đủ: [`05_VERIFICATION/known_issues.md`](05_VERIFICATION/known_issues.md)
 
-**FSM-F03-DAT** là dự án được thực hiện trong quá trình học tập và nghiên cứu tại **Trường Đại học Phenikaa**.
 
-**FSM-F03-DAT** is a project developed as part of the study and research activities at **Phenikaa University**.
 
-Dự án tập trung vào việc phân tích yêu cầu, xây dựng đặc tả, thiết kế, triển khai và kiểm thử hệ thống dựa trên mô hình **Máy trạng thái hữu hạn (Finite State Machine – FSM)**.
-
-The project focuses on requirement analysis, specification, system design, implementation, and testing based on the **Finite State Machine (FSM)** model.
-
----
-
-## 2. Mục tiêu | Objectives
-
-Mục tiêu của dự án là xây dựng hệ thống theo một quy trình phát triển có cấu trúc, trong đó các yêu cầu và đặc tả kỹ thuật được xác định rõ ràng trước khi triển khai.
-
-The objective of this project is to develop the system following a structured development process, in which requirements and technical specifications are clearly defined before implementation.
-
-Các mục tiêu chính | Main objectives:
-
-- Phân tích và xác định các yêu cầu của hệ thống.  
-  Analyze and define system requirements.
-
-- Xây dựng tài liệu đặc tả kỹ thuật.  
-  Develop technical specification documents.
-
-- Thiết kế hệ thống dựa trên các yêu cầu đã được thống nhất.  
-  Design the system based on the approved requirements.
-
-- Triển khai và kiểm thử hệ thống.  
-  Implement and test the system.
-
-- Quản lý tài liệu và mã nguồn bằng Git/GitHub.  
-  Manage project documents and source code using Git/GitHub.
+| | |
+|---|---|
+| **Mã đề** | F03 |
+| **Nhóm** | F · Máy trạng thái hữu hạn (FSM) |
+| **Độ khó** | Trung bình |
+| **Loại mạch** | Tuần tự |
+| **Quy mô ước lượng (Charter)** | ~230–330 cell · 1×1 tile |
+| **Top module** | `f03_lock_scaffold_explicit` |
+| **Phiên bản hồ sơ** | v1.0 · 2026-09-24 |
 
 ---
 
-## 3. Cấu trúc thư mục | Project Structure
+## 1. Tóm tắt kết quả
 
-```text
-FSM-F03-DAT/
-├── requirement/
-│   └── README.md
-│   └── requirements_F03.md
-└── specification/
-│   └── README.md
-│   └── specification_F03.md
-├── README.md
+| Tầng | Trạng thái | Kết quả chính |
+|---|---|---|
+| 01 Yêu cầu | ✅ | Yêu cầu truy vết từ Charter F03 |
+| 02 Đặc tả | ✅ | Giao diện đọc trực tiếp từ RTL; ràng buộc timing đã lập |
+| 03 Kiến trúc | ✅ | Sơ đồ khối, datapath, điều khiển, đánh đổi |
+| 04 Hiện thực | ✅ | RTL + SDC + 4 script chạy được |
+| 05 Kiểm chứng | ✅ | ✅ PASS — testbench chạy hết, không có assertion nào vi phạm |
+| 06 GDSII | 🟡 một phần | Synthesis ✅ · STA ✅ · Power ✅ · P&R ⬜ |
+| 07 Truy vết | ✅ | RTM + chỉ mục bằng chứng + giới hạn |
+
+### Số liệu đo được (không phải ước lượng)
+
+| Chỉ số | Giá trị | Công cụ |
+|---|---:|---|
+| Mô hình chuẩn Python | PASS | CPython 3 |
+| Mô phỏng RTL | PASS | Icarus Verilog 12.0 (stable) |
+| Số cell | **95** | Yosys 0.33 (git sha1 2584903a060) |
+| Flip-flop | **23** | như trên |
+| Diện tích | **908,3712 µm²** | như trên |
+| Đường tới hạn | `digit_valid` → `_153_` | OpenSTA 3.1.0 |
+| **Độ trễ** | **1,97 ns** | như trên |
+| Công suất (ước lượng) | 1.06e-04 W | như trên |
+
+## 2. Đọc từ đâu
+
+| Bạn là | Đọc theo thứ tự |
+|---|---|
+| **Muốn nắm bản chất nhanh** | **[`implementation-notes_F03.md`](implementation-notes_F03.md)** — hoặc mở bản `.html` |
+| **Giảng viên chấm bài** | `07_TRACEABILITY/limitations.md` → `RTM.csv` → `06_GDSII/physical_report.md` |
+| **Sinh viên nhận đề** | `01_REQUIREMENT/application.md` → `02_SPECIFICATION/` → `03_ARCHITECTURE/` → `04_IMPLEMENTATION/README.md` |
+| **Muốn chạy lại** | `07_TRACEABILITY/evidence_index.md` §5 |
+
+## 3. Cây thư mục
+
+```
+F03/
+├── implementation-notes_F03.md      ← phân tích bản chất + cách thực hiện
+├── implementation-notes_F03.html    ← bản đọc trên trình duyệt (tự chứa)
+├── 01_REQUIREMENT/     application · requirements · scope · acceptance_criteria
+├── 02_SPECIFICATION/   functional_spec · interface · timing · corner_cases · parameters
+├── 03_ARCHITECTURE/    system_diagram · block_diagram · datapath · control · fsm
+│                       timing_diagram · tradeoff
+├── 04_IMPLEMENTATION/  rtl/ · constraints/ · scripts/ · README
+├── 05_VERIFICATION/    golden_model/ · testbench/ · assertions/ · waveforms/
+│                       testplan · test_matrix.csv · verification_report
+├── 06_GDSII/           synthesis/ sta/ power/ floorplan/ placement/ cts/
+│                       routing/ drc/ lvs/ gds/ · physical_report
+└── 07_TRACEABILITY/    RTM.csv · evidence_index · limitations
 ```
 
-### `requirement/` – Yêu cầu dự án | Project Requirements
+## 4. Chạy lại toàn bộ
 
-Chứa các tài liệu mô tả yêu cầu của dự án, bao gồm yêu cầu chức năng, yêu cầu phi chức năng, đầu vào, đầu ra, các ràng buộc và các yêu cầu liên quan đến hệ thống.
+```bash
+python3 05_VERIFICATION/golden_model/reference_model.py
+bash    04_IMPLEMENTATION/scripts/01_run_sim.sh
+bash    04_IMPLEMENTATION/scripts/02_run_synth.sh
+sta -no_splash -exit 04_IMPLEMENTATION/scripts/03_run_sta.tcl
+bash    04_IMPLEMENTATION/scripts/04_run_librelane.sh     # cần PDK sky130A
+```
 
-Contains project requirement documents, including functional requirements, non-functional requirements, inputs, outputs, constraints, and other system requirements.
 
-### `specification/` – Đặc tả kỹ thuật | Technical Specification
-
-Chứa các tài liệu đặc tả kỹ thuật được xây dựng dựa trên các yêu cầu của dự án.
-
-Contains technical specification documents developed based on the project requirements.
-
----
-
-## 4. Quy trình thực hiện | Development Process
-
-Dự án được thực hiện theo các bước sau:
-
-The project follows the development process below:
-
-1. **Phân tích yêu cầu | Requirement Analysis**
-   - Phân tích và xác định các yêu cầu của hệ thống.
-   - Analyze and define system requirements.
-
-2. **Xây dựng yêu cầu | Requirement Definition**
-   - Hoàn thiện tài liệu yêu cầu ban đầu.
-   - Prepare the initial requirement document.
-
-3. **Xem xét yêu cầu | Requirement Review**
-   - Gửi tài liệu cho giảng viên xem xét.
-   - Submit the document to the supervisor for review.
-
-4. **Cập nhật yêu cầu | Requirement Update**
-   - Cập nhật tài liệu dựa trên phản hồi và phiên bản chuẩn từ giảng viên.
-   - Update the document based on the supervisor's feedback and approved version.
-
-5. **Xây dựng đặc tả | Specification Development**
-   - Xây dựng tài liệu đặc tả kỹ thuật dựa trên yêu cầu đã được thống nhất.
-   - Develop the technical specification based on the approved requirements.
-
-6. **Thiết kế và triển khai | Design and Implementation**
-   - Thiết kế và triển khai hệ thống theo đặc tả.
-   - Design and implement the system according to the specification.
-
-7. **Kiểm thử | Testing**
-   - Kiểm thử và đánh giá hoạt động của hệ thống.
-   - Test and evaluate the system.
-
-8. **Hoàn thiện | Finalization**
-   - Hoàn thiện tài liệu và mã nguồn của dự án.
-   - Finalize the project documentation and source code.
 
 ---
 
-## 5. Quản lý phiên bản | Version Control
-
-Dự án sử dụng **Git và GitHub** để quản lý mã nguồn, tài liệu và lịch sử thay đổi.
-
-The project uses **Git and GitHub** for source code management, documentation management, and version control.
-
-Các thay đổi được ghi nhận thông qua các lần `commit` nhằm thuận tiện cho việc theo dõi và quản lý phiên bản.
-
-Project changes are recorded through Git `commits` to facilitate version tracking and project management.
-
----
-
-## 6. Trạng thái dự án | Project Status
-
-**Trạng thái hiện tại | Current Status:**
-
-**Đang xây dựng tài liệu yêu cầu | Requirement documentation in progress**
-
-Tài liệu yêu cầu ban đầu đang được hoàn thiện để gửi giảng viên xem xét và cập nhật theo phiên bản chuẩn sau khi nhận được phản hồi.
-
-The initial requirement document is being prepared for supervisor review and will be updated according to the approved version after receiving feedback.
+*Nguồn chuẩn: `Project_Charter_80_De.docx` — mục F03. Gói nguồn: `F03_FINAL_MENTOR_PACKAGE_v1_0`.*
+*Hồ sơ này không đưa ra khẳng định nào về sign-off, tape-out, chế tạo hay kiểm tra sau chế
+tạo — những mục nằm ngoài phạm vi đề tài theo Charter mục 3.*

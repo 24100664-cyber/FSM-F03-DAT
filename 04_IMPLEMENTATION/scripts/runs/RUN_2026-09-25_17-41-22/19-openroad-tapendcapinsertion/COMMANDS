@@ -1,0 +1,1 @@
+openroad -exit -no_splash -metrics /home/lucero/projects/RTL2GDS_UNIFIED_80_v2.0/F03_FSM_khoa_so_bon_chu_so_co_khoa_tam/04_IMPLEMENTATION/scripts/runs/RUN_2026-09-25_17-41-22/19-openroad-tapendcapinsertion/or_metrics_out.json /nix/store/c0jbyg8dmh24m6fbdpjcx1fppc22an05-python3-3.13.9-env/lib/python3.13/site-packages/librelane/scripts/openroad/tapcell.tcl
