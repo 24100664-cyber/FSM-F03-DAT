@@ -1,0 +1,70 @@
+name: FSM F03 - STA
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  sta:
+    name: Static Timing Analysis
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Volare
+        run: |
+          python3 -m pip install --user --upgrade volare
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
+      - name: Download and enable Sky130 PDK
+        run: |
+          mkdir -p "$HOME/.volare"
+          volare enable \
+            --pdk sky130 \
+            --pdk-root "$HOME/.volare" \
+            0fe599b2afb6708d281543108caf8310912f54af
+
+      - name: Check Sky130 PDK
+        run: |
+          test -f "$HOME/.volare/sky130A/libs.ref/sky130_fd_sc_hd/lib/sky130_fd_sc_hd__tt_025C_1v80.lib"
+
+      - name: Prepare STA script
+        run: |
+          sed -i 's#/home/dmin/.volare#/pdk#g' \
+            06_GDSII/synthesis/synth.ys
+
+      - name: Run synthesis for STA netlist
+        run: |
+          docker run --rm \
+            -v "$PWD:/work" \
+            -v "$HOME/.volare:/pdk:ro" \
+            -w /work \
+            ghcr.io/librelane/librelane:3.0.16 \
+            yosys -Q -s 06_GDSII/synthesis/synth.ys
+
+      - name: Run OpenSTA
+        run: |
+          docker run --rm \
+            -v "$PWD:/work" \
+            -v "$HOME/.volare:/pdk:ro" \
+            -w /work \
+            -e LIBERTY=/pdk/sky130A/libs.ref/sky130_fd_sc_hd/lib/sky130_fd_sc_hd__tt_025C_1v80.lib \
+            ghcr.io/librelane/librelane:3.0.16 \
+            sta -no_splash -exit 04_IMPLEMENTATION/scripts/03_run_sta.tcl
+
+      - name: Upload STA and power reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sta-results
+          path: |
+            06_GDSII/sta/timing_report_max.txt
+            06_GDSII/sta/timing_report_min.txt
+            06_GDSII/sta/summary.txt
+            06_GDSII/sta/wns.txt
+            06_GDSII/sta/tns.txt
+            06_GDSII/power/power_report.txt
