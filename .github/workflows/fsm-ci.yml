@@ -1,0 +1,63 @@
+name: FSM F03 CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  simulation:
+    name: RTL Simulation
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Icarus Verilog
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y iverilog
+
+      - name: Run simulation
+        run: |
+          chmod +x 04_IMPLEMENTATION/scripts/01_run_sim.sh
+          bash 04_IMPLEMENTATION/scripts/01_run_sim.sh
+
+      - name: Upload simulation results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: simulation-results
+          path: |
+            05_VERIFICATION/simulation.log
+            05_VERIFICATION/waveforms/
+            05_VERIFICATION/iverilog_compile.log
+
+  synthesis:
+    name: RTL Synthesis
+    runs-on: ubuntu-latest
+    needs: simulation
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run synthesis
+        run: |
+          docker run --rm \
+            -v "$PWD:/work" \
+            -w /work \
+            ghcr.io/librelane/librelane:3.0.16 \
+            yosys -Q -s 06_GDSII/synthesis/synth.ys
+
+      - name: Upload synthesis results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: synthesis-results
+          path: |
+            06_GDSII/synthesis/synth_stat.txt
+            06_GDSII/synthesis/netlist.v
+            06_GDSII/synthesis/yosys.log
