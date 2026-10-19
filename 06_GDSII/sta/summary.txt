@@ -1,0 +1,4 @@
+Startpoint                           Endpoint                               Slack
+--------------------------------------------------------------------------------
+digit_valid (input)                  _174_/D (sky130_fd_sc_hd__dfxtp_1)      7.64
+
