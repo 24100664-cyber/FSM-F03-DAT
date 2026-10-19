@@ -1,0 +1,77 @@
+name: FSM F03 - GDSII
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  gdsii:
+    name: Physical Design and GDSII
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Volare
+        run: |
+          python3 -m pip install --user --upgrade volare
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
+      - name: Download and enable Sky130 PDK
+        run: |
+          mkdir -p "$HOME/.volare"
+          volare enable \
+            --pdk sky130 \
+            --pdk-root "$HOME/.volare" \
+            0fe599b2afb6708d281543108caf8310912f54af
+
+      - name: Check Sky130 PDK
+        run: |
+          test -d "$HOME/.volare/sky130A"
+          test -d "$HOME/.volare/sky130A/libs.ref/sky130_fd_sc_hd"
+
+      - name: Run LibreLane physical design
+        run: |
+          docker run --rm \
+            -v "$PWD:/work" \
+            -v "$HOME/.volare:/pdk:ro" \
+            -w /work \
+            -e PDK_ROOT=/pdk \
+            ghcr.io/librelane/librelane:3.0.16 \
+            librelane \
+            --manual-pdk \
+            --pdk-root /pdk \
+            --pdk sky130A \
+            --scl sky130_fd_sc_hd \
+            04_IMPLEMENTATION/scripts/config_librelane.json \
+            --run-tag f03-gdsii-ci \
+            --overwrite
+
+      - name: Collect GDSII and signoff results
+        if: always()
+        run: |
+          mkdir -p 06_GDSII/ci
+
+          if [ -d "04_IMPLEMENTATION/scripts/runs/f03-gdsii-ci/final" ]; then
+            cp -r 04_IMPLEMENTATION/scripts/runs/f03-gdsii-ci/final \
+              06_GDSII/ci/final
+          fi
+
+          find 04_IMPLEMENTATION/scripts/runs/f03-gdsii-ci \
+            -name "*.gds" \
+            -o -name "*.rpt" \
+            -o -name "metrics.csv" \
+            -o -name "metrics.json" \
+            > 06_GDSII/ci/files.txt 2>/dev/null || true
+
+      - name: Upload GDSII and signoff results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gdsii-signoff
+          path: |
+            04_IMPLEMENTATION/scripts/runs/f03-gdsii-ci/final/
+            06_GDSII/ci/files.txt
