@@ -6,6 +6,10 @@ on:
   pull_request:
     branches: [main]
 
+env:
+  PDK_ROOT: /tmp/pdk
+  SKY130_COMMIT: 0fe599b2afb6708d281543108caf8310912f54af
+
 jobs:
   simulation:
     name: RTL Simulation
@@ -44,10 +48,29 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Install Volare
+        run: |
+          python3 -m pip install --user --upgrade volare
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
+      - name: Download and enable Sky130 PDK
+        run: |
+          mkdir -p "$PDK_ROOT"
+          volare enable \
+            --pdk sky130 \
+            --pdk-root "$PDK_ROOT" \
+            "$SKY130_COMMIT"
+
+      - name: Check Sky130 PDK
+        run: |
+          test -f "$PDK_ROOT/sky130A/libs.ref/sky130_fd_sc_hd/lib/sky130_fd_sc_hd__tt_025C_1v80.lib"
+          ls -lh "$PDK_ROOT/sky130A/libs.ref/sky130_fd_sc_hd/lib/sky130_fd_sc_hd__tt_025C_1v80.lib"
+
       - name: Run synthesis
         run: |
           docker run --rm \
             -v "$PWD:/work" \
+            -v "$PDK_ROOT:/pdk:ro" \
             -w /work \
             ghcr.io/librelane/librelane:3.0.16 \
             yosys -Q -s 06_GDSII/synthesis/synth.ys
