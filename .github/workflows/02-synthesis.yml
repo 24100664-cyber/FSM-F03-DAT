@@ -1,0 +1,58 @@
+name: FSM F03 - Synthesis
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  synthesis:
+    name: RTL Synthesis
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Volare
+        run: |
+          python3 -m pip install --user --upgrade volare
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
+      - name: Download and enable Sky130 PDK
+        run: |
+          mkdir -p "$HOME/.volare"
+          volare enable \
+            --pdk sky130 \
+            --pdk-root "$HOME/.volare" \
+            0fe599b2afb6708d281543108caf8310912f54af
+
+      - name: Check Sky130 PDK
+        run: |
+          test -f "$HOME/.volare/sky130A/libs.ref/sky130_fd_sc_hd/lib/sky130_fd_sc_hd__tt_025C_1v80.lib"
+          ls -lh "$HOME/.volare/sky130A/libs.ref/sky130_fd_sc_hd/lib/sky130_fd_sc_hd__tt_025C_1v80.lib"
+
+      - name: Prepare synthesis script
+        run: |
+          sed -i 's#/home/dmin/.volare#/pdk#g' \
+            06_GDSII/synthesis/synth.ys
+
+      - name: Run Yosys synthesis
+        run: |
+          docker run --rm \
+            -v "$PWD:/work" \
+            -v "$HOME/.volare:/pdk:ro" \
+            -w /work \
+            ghcr.io/librelane/librelane:3.0.16 \
+            yosys -Q -s 06_GDSII/synthesis/synth.ys
+
+      - name: Upload synthesis results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: synthesis-results
+          path: |
+            06_GDSII/synthesis/synth_stat.txt
+            06_GDSII/synthesis/netlist.v
+            06_GDSII/synthesis/yosys.log
