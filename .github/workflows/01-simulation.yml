@@ -1,0 +1,36 @@
+name: FSM F03 - Simulation
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  simulation:
+    name: RTL Simulation
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Icarus Verilog
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y iverilog
+
+      - name: Run RTL simulation
+        run: |
+          chmod +x 04_IMPLEMENTATION/scripts/01_run_sim.sh
+          bash 04_IMPLEMENTATION/scripts/01_run_sim.sh
+
+      - name: Upload simulation results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: simulation-results
+          path: |
+            05_VERIFICATION/simulation.log
+            05_VERIFICATION/iverilog_compile.log
+            05_VERIFICATION/waveforms/
