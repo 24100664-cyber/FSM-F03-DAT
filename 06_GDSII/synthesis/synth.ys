@@ -1,0 +1,18 @@
+read_verilog -sv 04_IMPLEMENTATION/rtl/f03_lock_scaffold.sv
+read_verilog -sv 04_IMPLEMENTATION/rtl/f03_lock_scaffold_explicit.sv
+hierarchy -check -top f03_lock_scaffold_explicit
+proc
+opt
+fsm
+opt
+memory
+opt
+techmap
+opt
+dfflibmap -liberty /home/dmin/.volare/sky130A/libs.ref/sky130_fd_sc_hd/lib/sky130_fd_sc_hd__tt_025C_1v80.lib
+abc -liberty /home/dmin/.volare/sky130A/libs.ref/sky130_fd_sc_hd/lib/sky130_fd_sc_hd__tt_025C_1v80.lib
+setundef -zero
+splitnets
+opt_clean -purge
+tee -o 06_GDSII/synthesis/synth_stat.txt stat -liberty /home/dmin/.volare/sky130A/libs.ref/sky130_fd_sc_hd/lib/sky130_fd_sc_hd__tt_025C_1v80.lib
+write_verilog -noattr 06_GDSII/synthesis/netlist.v

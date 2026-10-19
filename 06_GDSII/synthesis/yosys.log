@@ -1,0 +1,5 @@
+
+-- Executing script file `06_GDSII/synthesis/synth.ys' --
+
+1. Executing Verilog-2005 frontend: 04_IMPLEMENTATION/rtl/f03_lock_scaffold.sv
+04_IMPLEMENTATION/rtl/f03_lock_scaffold.sv:6: ERROR: syntax error, unexpected TOK_LOGIC, expecting TOK_ID or TOK_INTEGER or TOK_SIGNED or '['
