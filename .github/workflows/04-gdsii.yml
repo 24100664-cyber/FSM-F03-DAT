@@ -53,25 +53,43 @@ jobs:
       - name: Collect GDSII and signoff results
         if: always()
         run: |
-          mkdir -p 06_GDSII/ci
+          set -u
 
-          if [ -d "04_IMPLEMENTATION/scripts/runs/f03-gdsii-ci/final" ]; then
-            cp -r 04_IMPLEMENTATION/scripts/runs/f03-gdsii-ci/final \
-              06_GDSII/ci/final
+          RUN="04_IMPLEMENTATION/scripts/runs/f03-gdsii-ci"
+          OUT="06_GDSII/ci"
+
+          mkdir -p "$OUT/gds" "$OUT/reports" "$OUT/metrics"
+
+          if [ -d "$RUN" ]; then
+            find "$RUN" -type f -name "*.gds" \
+              -exec cp --parents {} "$OUT/gds" \;
+
+            find "$RUN" -type f \
+              \( -name "*.rpt" -o -name "metrics.csv" -o -name "metrics.json" \) \
+              -print > "$OUT/files.txt"
+
+            while IFS= read -r file; do
+              [ -f "$file" ] || continue
+
+              case "$file" in
+                *.rpt)
+                  cp --parents "$file" "$OUT/reports"
+                  ;;
+                */metrics.csv|*/metrics.json)
+                  cp --parents "$file" "$OUT/metrics"
+                  ;;
+              esac
+            done < "$OUT/files.txt"
+          else
+            echo "LibreLane run directory not found: $RUN" \
+              > "$OUT/collection-error.txt"
           fi
-
-          find 04_IMPLEMENTATION/scripts/runs/f03-gdsii-ci \
-            -name "*.gds" \
-            -o -name "*.rpt" \
-            -o -name "metrics.csv" \
-            -o -name "metrics.json" \
-            > 06_GDSII/ci/files.txt 2>/dev/null || true
 
       - name: Upload GDSII and signoff results
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: gdsii-signoff
+          if-no-files-found: warn
           path: |
-            04_IMPLEMENTATION/scripts/runs/f03-gdsii-ci/final/
-            06_GDSII/ci/files.txt
+            06_GDSII/ci/
