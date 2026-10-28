@@ -1,0 +1,4 @@
+VCD info: dumpfile 05_VERIFICATION/waveforms/v2_p2_check_20261028/f03_v2_p2_gate.vcd opened for output.
+PASS: Da vao unlock tai 120000 ns
+PASS P-2: d0 da nhan chu so 9 tai 126000 ns
+P-2 gate-level check completed.
